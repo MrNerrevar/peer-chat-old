@@ -26,10 +26,10 @@ bool Client::writeData(QByteArray data)
         return false;
 }
 
-//bool Client::writeMessage(Message m)
-//{
-//    return this->writeMessage(m.Message::toByteArray());
-//}
+bool Client::writeMessage(Message m)
+{
+    return this->writeData(m.Message::toByteArray());
+}
 
 QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have 4 bytes
 {
@@ -39,3 +39,5 @@ QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have
     data << source;
     return temp;
 }
+
+

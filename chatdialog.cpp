@@ -18,10 +18,20 @@ ChatDialog::ChatDialog(QWidget *parent)
     myNickName = "Jake";
     newParticipant(myNickName);
 
-    //client.connectToHost("192.168.0.10");
+    //client.connectToHost("192.168.0.52");
+    //client.writeData(myNickName, myIP);
 
     tableFormat.setBorder(0);
 }
+
+//void ChatDialog::getLocalIP()
+//{
+//    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+//        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+//             qDebug() << address.toString();
+//    }
+//    return address.toString();
+//}
 
 void ChatDialog::appendMessage(const QString &from, const QString &message)
 {
@@ -43,19 +53,11 @@ void ChatDialog::returnPressed()
     if (text.isEmpty())
         return;
 
-    if (text.startsWith(QChar('/'))) {
-        QColor color = textEdit->textColor();
-        textEdit->setTextColor(Qt::red);
-        textEdit->append(tr("! Unknown command: %1")
-                         .arg(text.left(text.indexOf(' '))));
-        textEdit->setTextColor(color);
-    } else {
-        client.connectToHost("localhost");
-        client.writeData(text.toUtf8());
-        appendMessage(myNickName, text);
+    client.connectToHost("localhost");
+    client.writeData(text.toUtf8());
+    appendMessage(myNickName, text);
 
-        writeToFile(myNickName, text);
-    }
+    writeToFile(myNickName, text);
 
     lineEdit->clear();
 }

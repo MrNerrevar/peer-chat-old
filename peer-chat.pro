@@ -27,11 +27,13 @@ HEADERS       = chatdialog.h \
                 client.h \
                 server.h \
                 message.h \
-                participant.h
+                participant.h \
+    chatbackup.h
 SOURCES       = chatdialog.cpp \
                 client.cpp \
                 main.cpp \
                 server.cpp \
                 message.cpp \
-                participant.cpp
+                participant.cpp \
+    chatbackup.cpp
 FORMS         = chatdialog.ui

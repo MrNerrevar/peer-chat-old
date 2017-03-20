@@ -10,7 +10,7 @@ class Message : public QObject
     Q_OBJECT
 private:
     Participant _sender;
-    Participant _receiver;
+    //Participant _receiver;
     QDateTime _time;
     QString _data;
 public:
