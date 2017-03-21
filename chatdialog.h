@@ -13,7 +13,7 @@ public:
     ChatDialog(QWidget *parent = 0);
 
 public slots:
-    void appendMessage(const QString &from, const QString &message);
+    void appendMessage(Message*);
 
 private slots:
     void getLocalIP();

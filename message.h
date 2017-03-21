@@ -2,26 +2,32 @@
 #define MESSAGE_H
 
 #include <QObject>
-#include "participant.h"
 #include <QDateTime>
+#include "participant.h"
 
-class Message : public QObject
+class Message
 {
-    Q_OBJECT
-private:
-    Participant _sender;
-    //Participant _receiver;
-    QDateTime _time;
-    QString _data;
 public:
-    explicit Message(QObject *parent = 0);
-    Message(Participant s, Participant r);
+    Participant Sender;
+    QDateTime Time;
+    QString Data;
+
+    Message();
+    Message(Participant, QString);
     void setData(QString d);
     QString toRawString();
     QByteArray toByteArray();
-signals:
+    bool isEmpty();
 
-public slots:
+    Message fromRawString(QString);
+
+    const QString MessageRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: [^\\[.\\]]+\\[.\\]";
+    const QString HeaderRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: ";
+    const QString TrailerRegex = "\\[.\\]";
+    const QString NameAndDateRegex = "(\\[[\\w\\d: \\+\\-]+\\])";
+    const QString NameLastIndexRegex = "\\](\\[[\\w\\d: \\+\\-]+\\]): [^\\[.\\]]+\\[.\\]";
+    const QString DateLastIndexRegex = "\\]: [^\\[.\\]]+\\[.\\]";
+    const QString HeaderIndexRegex = "[^:\\[.\\]]+\\[.\\]";
 };
 
 #endif // MESSAGE_H

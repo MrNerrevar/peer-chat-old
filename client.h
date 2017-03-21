@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtNetwork>
 #include "message.h"
+#include "participant.h"
 
 class Client : public QObject
 {
@@ -14,11 +15,16 @@ public:
 public slots:
     bool connectToHost(QString host);
     bool writeData(QByteArray data);
+    bool writeMessage(Message* m);
+    void setParticipant(Participant*);
+    Participant* getParticipant();
 
-    bool writeMessage(Message m);
+    QByteArray readData();
+    Message* readMessage();
 
 private:
     QTcpSocket *socket;
+    Participant* me;
 };
 
 #endif // CLIENT_H

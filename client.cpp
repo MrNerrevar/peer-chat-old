@@ -26,9 +26,35 @@ bool Client::writeData(QByteArray data)
         return false;
 }
 
-bool Client::writeMessage(Message m)
+bool Client::writeMessage(Message* m)
 {
-    return this->writeData(m.Message::toByteArray());
+    m->Sender = *(this->me);
+    return this->writeData(m->toByteArray());
+}
+
+void Client::setParticipant(Participant* p)
+{
+    this->me = p;
+}
+
+Participant* Client::getParticipant()
+{
+    return this->me;
+}
+
+QByteArray Client::readData()
+{
+    if(socket->state() == QAbstractSocket::ConnectedState)
+        return socket->readAll();
+    return QByteArray();
+}
+
+Message* Client::readMessage()
+{
+    auto bytes = readData();
+    auto message = new Message();
+    message->fromRawString(QString(bytes));
+    return message;
 }
 
 QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have 4 bytes

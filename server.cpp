@@ -1,4 +1,6 @@
 #include "server.h"
+#include "message.h"
+#include "chatdialog.h"
 
 static inline qint32 ArrayToInt(QByteArray source);
 
@@ -56,8 +58,13 @@ void Server::readyRead()
                 buffer->remove(0, size);
                 size = 0;
                 *s = size;
+                auto m = new Message();
+                m->fromRawString(QString(data));
                 emit dataReceived(data);
                 qDebug() << "Heard:" << data;
+                qDebug() << "Participant: " << m->Sender.getName();
+                qDebug() << "Time: " << m->Time.toString();
+                qDebug() << "Data: " << m->Data;
             }
         }
     }

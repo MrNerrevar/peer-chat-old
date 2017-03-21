@@ -13,6 +13,8 @@ public:
     Participant(QString n, QString c);
     QString getName();
     QString getConnection();
+
+    bool isEmpty();
 };
 
 #endif // PARTICIPANT_H

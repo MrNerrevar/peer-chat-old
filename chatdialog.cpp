@@ -15,34 +15,38 @@ ChatDialog::ChatDialog(QWidget *parent)
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 
-    myNickName = "Jake";
+    client.setParticipant(new Participant("Jake", "localhost"));
+
+    myNickName = client.getParticipant()->getName();
     newParticipant(myNickName);
 
     //client.connectToHost("192.168.0.52");
     //client.writeData(myNickName, myIP);
-
     tableFormat.setBorder(0);
 }
 
-//void ChatDialog::getLocalIP()
-//{
-//    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
-//        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-//             qDebug() << address.toString();
-//    }
-//    return address.toString();
-//}
-
-void ChatDialog::appendMessage(const QString &from, const QString &message)
+void ChatDialog::getLocalIP()
 {
-    if (from.isEmpty() || message.isEmpty())
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
+    {
+        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
+        {
+            qDebug() << address.toString();
+        }
+    }
+}
+
+void ChatDialog::appendMessage(Message* m)
+{
+    if (m->isEmpty())
         return;
 
     QTextCursor cursor(textEdit->textCursor());
     cursor.movePosition(QTextCursor::End);
-    QTextTable *table = cursor.insertTable(1, 2, tableFormat);
-    table->cellAt(0, 0).firstCursorPosition().insertText('<' + from + "> ");
-    table->cellAt(0, 1).firstCursorPosition().insertText(message);
+    QTextTable *table = cursor.insertTable(1, 3, tableFormat);
+    table->cellAt(0,0).firstCursorPosition().insertText(('[' + m->Time.toString(Qt::SystemLocaleShortDate) + ']'));
+    table->cellAt(0, 1).firstCursorPosition().insertText('<' + m->Sender.getName() + "> ");
+    table->cellAt(0, 2).firstCursorPosition().insertText(m->Data);
     QScrollBar *bar = textEdit->verticalScrollBar();
     bar->setValue(bar->maximum());
 }
@@ -54,8 +58,12 @@ void ChatDialog::returnPressed()
         return;
 
     client.connectToHost("localhost");
-    client.writeData(text.toUtf8());
-    appendMessage(myNickName, text);
+
+    auto m = new Message();
+    m->setData(text);
+
+    client.writeMessage(m);
+    appendMessage(m);
 
     writeToFile(myNickName, text);
 

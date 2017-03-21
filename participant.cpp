@@ -20,3 +20,8 @@ QString Participant::getConnection()
 {
     return this->_connection;
 }
+
+bool Participant::isEmpty()
+{
+    return this->_name.isEmpty() && this->_connection.isEmpty();
+}

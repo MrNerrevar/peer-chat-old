@@ -1,33 +1,63 @@
 #include "message.h"
+#include <QRegExp>
 
-Message::Message(QObject *parent) : QObject(parent)
+Message::Message()
 {
 
 }
 
-Message::Message(Participant s, Participant r)
+Message::Message(Participant p, QString s)
 {
-    this->_sender = s;
-    //this->_receiver = r;
-    this->_data = "";
+    this->Sender = p;
+    this->Data = s;
+    this->Time = QDateTime::currentDateTime();
 }
 
 void Message::setData(QString d)
 {
-    this->_data = d;
-    this->_time = QDateTime::currentDateTime();
+    this->Data = d;
+    this->Time = QDateTime::currentDateTime();
 }
 
 QString Message::toRawString()
 {
-    QString s = "[" + this->_sender.getName() + "::"
-    //+ this->_receiver.getName() + "]["
-    //+ this->_time.toString() + "]: "
-    + this->_data;
+    QString s = "[" + this->Sender.getName() + "]["
+    + this->Time.toString(Qt::ISODate) + "]: "
+    + this->Data + "[.]";
     return s;
 }
 
 QByteArray Message::toByteArray()
 {
     return this->toRawString().toUtf8();
+}
+
+bool Message::isEmpty()
+{
+    return this->Sender.isEmpty() && this->Data.isEmpty();
+}
+
+Message Message::fromRawString(QString s)
+{
+    auto index = 1;
+    auto last = s.indexOf(QRegExp(NameLastIndexRegex));
+    auto length = s.length() - index;
+    auto raw = QString(s);
+
+    this->Sender = Participant(raw.replace(0, index, "").replace(last - index, length, ""), "");
+
+    index = this->Sender.getName().length() + 3;
+    last = s.indexOf(QRegExp(DateLastIndexRegex));
+    length = s.length() - index;
+    raw = QString(s);
+
+    this->Time = QDateTime::fromString(raw.replace(0, index, "").replace(last - index, length, ""), Qt::ISODate);
+
+    index = s.indexOf(QRegExp(HeaderIndexRegex));
+    last = s.indexOf(QRegExp(TrailerRegex));
+    length = s.length() - index;
+    raw = QString(s);
+
+    this->Data = raw.replace(0, index, "").replace(last - index, length, "").trimmed();
+    return *(this);
 }
