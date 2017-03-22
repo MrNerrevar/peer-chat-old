@@ -60,7 +60,7 @@ void Server::readyRead()
                 *s = size;
                 auto m = new Message();
                 m->fromRawString(QString(data));
-                emit dataReceived(data);
+                emit messageReceived(m);
                 qDebug() << "Heard:" << data;
                 qDebug() << "Participant: " << m->Sender.getName();
                 qDebug() << "Time: " << m->Time.toString();

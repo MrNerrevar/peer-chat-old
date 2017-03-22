@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtNetwork>
+#include "message.h"
 
 class Server : public QObject
 {
@@ -11,7 +12,7 @@ public:
     explicit Server(QObject *parent = 0);
 
 signals:
-    void dataReceived(QByteArray);
+    void messageReceived(Message*);
 
 private slots:
     void newConnection();

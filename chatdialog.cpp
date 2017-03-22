@@ -14,6 +14,7 @@ ChatDialog::ChatDialog(QWidget *parent)
 
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
+    connect(&server, SIGNAL(messageReceived(Message*)), this, SLOT(appendMessage(Message*)));
 
     client.setParticipant(new Participant("Jake", "localhost"));
 
@@ -63,7 +64,7 @@ void ChatDialog::returnPressed()
     m->setData(text);
 
     client.writeMessage(m);
-    appendMessage(m);
+    //appendMessage(m);
 
     writeToFile(myNickName, text);
 
