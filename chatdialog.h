@@ -2,9 +2,9 @@
 #define CHATDIALOG_H
 
 #include "ui_chatdialog.h"
-#include "client.h"
-#include "server.h"
 
+class Peer;
+class Message;
 class ChatDialog : public QDialog, private Ui::ChatDialog
 {
     Q_OBJECT
@@ -23,10 +23,10 @@ private slots:
     void writeToFile(QString &nick, QString &msg);
 
 private:
-    QString myNickName;
+    void initParticipants();
+
     QTextTableFormat tableFormat;
-    Client client;
-    Server server;
+    Peer* peer;
 };
 
 #endif

@@ -5,23 +5,16 @@ Participant::Participant()
 
 }
 
-Participant::Participant(QString n, QString c)
+Participant::Participant(QString n, QString c, qint16 p)
 {
-    this->_name = n;
-    this->_connection = c;
+    this->Name = n;
+    this->Host = c;
+    this->Port = p;
+    this->Status = n.isEmpty() ? ParticipantStatus::HostUnknown : ParticipantStatus::HostKnown;
 }
 
-QString Participant::getName()
-{
-    return this->_name;
-}
-
-QString Participant::getConnection()
-{
-    return this->_connection;
-}
 
 bool Participant::isEmpty()
 {
-    return this->_name.isEmpty() && this->_connection.isEmpty();
+    return this->Name.isEmpty() && this->Host.isEmpty();
 }

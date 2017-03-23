@@ -1,4 +1,5 @@
 #include "message.h"
+#include "participantmanager.h"
 #include <QRegExp>
 
 Message::Message()
@@ -6,9 +7,9 @@ Message::Message()
 
 }
 
-Message::Message(Participant p, QString s)
+Message::Message(Participant* p, QString s)
 {
-    this->Sender = p;
+    this->Receiver = p;
     this->Data = s;
     this->Time = QDateTime::currentDateTime();
 }
@@ -21,7 +22,7 @@ void Message::setData(QString d)
 
 QString Message::toRawString()
 {
-    QString s = "[" + this->Sender.getName() + "]["
+    QString s = "[" + this->Sender->Name + "]["
     + this->Time.toString(Qt::ISODate) + "]: "
     + this->Data + "[.]";
     return s;
@@ -34,7 +35,7 @@ QByteArray Message::toByteArray()
 
 bool Message::isEmpty()
 {
-    return this->Sender.isEmpty() && this->Data.isEmpty();
+    return this->Sender->isEmpty() && this->Data.isEmpty();
 }
 
 Message Message::fromRawString(QString s)
@@ -44,9 +45,9 @@ Message Message::fromRawString(QString s)
     auto length = s.length() - index;
     auto raw = QString(s);
 
-    this->Sender = Participant(raw.replace(0, index, "").replace(last - index, length, ""), "");
+    this->Sender = ParticipantManager::getParticipant(raw.replace(0, index, "").replace(last - index, length, ""));
 
-    index = this->Sender.getName().length() + 3;
+    index = this->Sender->Name.length() + 3;
     last = s.indexOf(QRegExp(DateLastIndexRegex));
     length = s.length() - index;
     raw = QString(s);

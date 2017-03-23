@@ -8,13 +8,16 @@
 class Message
 {
 public:
-    Participant Sender;
+    Participant* Sender;
+    Participant* Receiver;
     QDateTime Time;
     QString Data;
 
     Message();
-    Message(Participant, QString);
+    Message(Participant*, QString);
+
     void setData(QString d);
+
     QString toRawString();
     QByteArray toByteArray();
     bool isEmpty();

@@ -8,7 +8,7 @@ class chatBackup : public QObject
     Q_OBJECT
 public:
     explicit chatBackup(QObject *parent = 0);
-    enum SaveFormat {Json};
+    enum SaveFormat {Json, Binary};
 
     void writeBackup();
     void readBackup();

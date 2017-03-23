@@ -24,16 +24,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 HEADERS       = chatdialog.h \
-                client.h \
-                server.h \
                 message.h \
                 participant.h \
-    chatbackup.h
+    		chatbackup.h \
+    		peer.h \
+    		participantmanager.h
 SOURCES       = chatdialog.cpp \
-                client.cpp \
                 main.cpp \
-                server.cpp \
                 message.cpp \
                 participant.cpp \
-    chatbackup.cpp
+		chatbackup.cpp \
+    		peer.cpp \
+    		participantmanager.cpp
 FORMS         = chatdialog.ui

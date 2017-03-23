@@ -3,16 +3,23 @@
 
 #include <QObject>
 
+enum ParticipantStatus
+{
+    HostUnknown = 1,
+    HostKnown = 0
+};
+
 class Participant
 {
 private:
-    QString _name;
-    QString _connection;
 public:
     Participant();
-    Participant(QString n, QString c);
-    QString getName();
-    QString getConnection();
+    Participant(QString, QString, qint16);
+
+    QString Name;
+    QString Host;
+    qint16 Port;
+    ParticipantStatus Status;
 
     bool isEmpty();
 };

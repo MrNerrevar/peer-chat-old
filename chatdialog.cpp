@@ -1,6 +1,9 @@
 #include <QtWidgets>
 
 #include "chatdialog.h"
+#include "peer.h"
+#include "message.h"
+#include "participantmanager.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -12,18 +15,28 @@ ChatDialog::ChatDialog(QWidget *parent)
     textEdit->setReadOnly(true);
     listWidget->setFocusPolicy(Qt::NoFocus);
 
+    this->peer = new Peer();
+
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
-    connect(&server, SIGNAL(messageReceived(Message*)), this, SLOT(appendMessage(Message*)));
+    connect(peer, SIGNAL(readMessage(Message*)), this, SLOT(appendMessage(Message*)));
+    this->initParticipants();
 
-    client.setParticipant(new Participant("Jake", "localhost"));
-
-    myNickName = client.getParticipant()->getName();
-    newParticipant(myNickName);
-
-    //client.connectToHost("192.168.0.52");
-    //client.writeData(myNickName, myIP);
     tableFormat.setBorder(0);
+}
+
+void ChatDialog::initParticipants()
+{
+    auto p = new Participant("Jake", "localhost", 1024);
+    ParticipantManager::addParticipant(p);
+    peer->setParticipant(p);
+    newParticipant(p->Name);
+
+    p = new Participant("George", "localhost", 1024);
+    ParticipantManager::addParticipant(p);
+    newParticipant(p->Name);
+
+    //peer->connectTo(p);
 }
 
 void ChatDialog::getLocalIP()
@@ -44,10 +57,9 @@ void ChatDialog::appendMessage(Message* m)
 
     QTextCursor cursor(textEdit->textCursor());
     cursor.movePosition(QTextCursor::End);
-    QTextTable *table = cursor.insertTable(1, 3, tableFormat);
-    table->cellAt(0,0).firstCursorPosition().insertText(('[' + m->Time.toString(Qt::SystemLocaleShortDate) + ']'));
-    table->cellAt(0, 1).firstCursorPosition().insertText('<' + m->Sender.getName() + "> ");
-    table->cellAt(0, 2).firstCursorPosition().insertText(m->Data);
+    QTextTable *table = cursor.insertTable(1, 2, tableFormat);
+    table->cellAt(0, 0).firstCursorPosition().insertText('<' + m->Sender->Name + "> ");
+    table->cellAt(0, 1).firstCursorPosition().insertText(m->Data);
     QScrollBar *bar = textEdit->verticalScrollBar();
     bar->setValue(bar->maximum());
 }
@@ -58,15 +70,17 @@ void ChatDialog::returnPressed()
     if (text.isEmpty())
         return;
 
-    client.connectToHost("localhost");
-
     auto m = new Message();
     m->setData(text);
+    m->Receiver = ParticipantManager::getParticipant("George");
 
-    client.writeMessage(m);
-    //appendMessage(m);
+    if(!peer->connectTo(ParticipantManager::getParticipant("George")))
+        peer->connectTo(ParticipantManager::getParticipant("George"));
 
-    writeToFile(myNickName, text);
+    if(peer->writeMessage(m))
+        appendMessage(m);
+
+    //writeToFile(myNickName, text);
 
     lineEdit->clear();
 }
