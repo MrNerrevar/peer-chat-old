@@ -1,6 +1,7 @@
 #ifndef CHATDIALOG_H
 #define CHATDIALOG_H
 
+#include "chatbackup.h"
 #include "ui_chatdialog.h"
 
 class Peer;
@@ -20,13 +21,13 @@ private slots:
     void returnPressed();
     void newParticipant(const QString &nick);
     void participantLeft(const QString &nick);
-    void writeToFile(QString &nick, QString &msg);
 
 private:
     void initParticipants();
 
     QTextTableFormat tableFormat;
     Peer* peer;
+    //chatBackup* chatbackup;
 };
 
 #endif

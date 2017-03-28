@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtNetwork>
+#include <QString>
 
 class Message;
 class Participant;
@@ -13,6 +14,8 @@ public:
     explicit Peer(QObject *parent = 0);
 
     void setParticipant(Participant*);
+    QString getAddress(Participant*);
+    QString getAddress();
 signals:
     void readMessage(Message*);
 public slots:

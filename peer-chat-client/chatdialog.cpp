@@ -4,6 +4,7 @@
 #include "peer.h"
 #include "message.h"
 #include "participantmanager.h"
+#include "chatbackup.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -16,6 +17,7 @@ ChatDialog::ChatDialog(QWidget *parent)
     listWidget->setFocusPolicy(Qt::NoFocus);
 
     this->peer = new Peer();
+    //this->chatbackup = new chatBackup();
 
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
     connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
@@ -27,13 +29,11 @@ ChatDialog::ChatDialog(QWidget *parent)
 
 void ChatDialog::initParticipants()
 {
-    auto p = new Participant("Jake", "localhost", 1024);
-    ParticipantManager::addParticipant(p);
+    auto p = ParticipantManager::newParticipant("Jake", "localhost", 1024);
     peer->setParticipant(p);
     newParticipant(p->Name);
 
-    p = new Participant("George", "localhost", 1024);
-    ParticipantManager::addParticipant(p);
+    p = ParticipantManager::newParticipant("Auth", "localhost", 1023);
     newParticipant(p->Name);
 
     //peer->connectTo(p);
@@ -52,7 +52,7 @@ void ChatDialog::getLocalIP()
 
 void ChatDialog::appendMessage(Message* m)
 {
-    if (m->isEmpty())
+    if (m == NULL || m->isEmpty())
         return;
 
     QTextCursor cursor(textEdit->textCursor());
@@ -72,28 +72,23 @@ void ChatDialog::returnPressed()
 
     auto m = new Message();
     m->setData(text);
-    m->Receiver = ParticipantManager::getParticipant("George");
+    m->Receiver = ParticipantManager::getParticipant("Auth");
 
-    if(!peer->connectTo(ParticipantManager::getParticipant("George")))
-        peer->connectTo(ParticipantManager::getParticipant("George"));
+    if(!m->Receiver->isWellKnown())
+        return;
+
+    if(!peer->connectTo(ParticipantManager::getParticipant("Auth")))
+        peer->connectTo(ParticipantManager::getParticipant("Auth"));
 
     if(peer->writeMessage(m))
+    {
         appendMessage(m);
+        //chatbackup->writeToFile(m);
+    }
 
     //writeToFile(myNickName, text);
 
     lineEdit->clear();
-}
-
-void ChatDialog::writeToFile(QString &nick, QString &msg)
-{
-    QString chatFile="/home/jake/Documents/network-chat/chat.txt";
-    QFile file(chatFile);
-    if ( file.open(QIODevice::ReadWrite) )
-    {
-        QTextStream stream(&file);
-        stream << nick << ": " << msg << endl;
-    }
 }
 
 void ChatDialog::newParticipant(const QString &nick)

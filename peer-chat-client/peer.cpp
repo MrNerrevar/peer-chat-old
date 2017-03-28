@@ -1,11 +1,13 @@
 #include "peer.h"
 #include "message.h"
+#include "participantmanager.h"
 
 static inline qint32 ArrayToInt(QByteArray source);
 static inline QByteArray IntToArray(qint32 source);
 
 Peer::Peer(QObject *parent) : QObject(parent)
 {
+    qDebug() << "Setup server peer";
     server = new QTcpServer(this);
     connect(server, SIGNAL(newConnection()), SLOT(newConnection()));
     this->server->listen(QHostAddress::Any, 1024);
@@ -13,6 +15,7 @@ Peer::Peer(QObject *parent) : QObject(parent)
 
 void Peer::allocateSocket(QTcpSocket* socket)
 {
+    qDebug() << "Allocating socket";
     connect(socket, SIGNAL(readyRead()), SLOT(readyRead()));
     connect(socket, SIGNAL(disconnected()), SLOT(disconnected()));
     auto buffer = new QByteArray();
@@ -25,6 +28,8 @@ bool Peer::connectTo(Participant* p)
 {
     if(p->Status == 1)
         return false;
+
+    qDebug() << "Connecting to peer";
     auto socket = new QTcpSocket(this);
     socket->connectToHost(p->Host, p->Port);
     auto connected = socket->waitForConnected();
@@ -35,10 +40,15 @@ bool Peer::connectTo(Participant* p)
 
 void Peer::newConnection()
 {
+    qDebug() << "New connection?";
     while (server->hasPendingConnections())
     {
+        qDebug() << "Yeah new connection";
         auto socket = server->nextPendingConnection();
         allocateSocket(socket);
+
+        auto p = ParticipantManager::newParticipant(socket->peerAddress().toString(), socket->peerPort());
+        participants.insert(p, socket);
     }
 }
 
@@ -77,6 +87,7 @@ bool Peer::writeMessage(Message* m)
 
 void Peer::readyRead()
 {
+    qDebug() << "Received message";
     QTcpSocket *socket = static_cast<QTcpSocket*>(sender());
     QByteArray *buffer = buffers.value(socket);
     qint32 *s = sizes.value(socket);
@@ -100,10 +111,27 @@ void Peer::readyRead()
                 *s = size;
                 auto m = new Message();
                 m->fromRawString(QString(data));
+                qDebug() << "Read Message";
+                QString pp = "pp";
+                qDebug() << pp;
+                qDebug() << m->Data;
+
+                auto p = this->participants.key(socket);
+                ParticipantManager::newParticipant(p->Name, p->Host, p->Port);
                 emit readMessage(m);
             }
         }
     }
+}
+
+//QString Peer::getAddress()
+//{
+//    return this->server->peerAddress().toString();
+//}
+
+QString Peer::getAddress(Participant* p)
+{
+    return this->participants.value(p)->peerAddress().toString();
 }
 
 qint32 ArrayToInt(QByteArray source)

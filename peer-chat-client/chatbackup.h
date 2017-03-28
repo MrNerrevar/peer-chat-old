@@ -1,17 +1,22 @@
-#ifndef CHATBACKUP_H
+/*#ifndef CHATBACKUP_H
 #define CHATBACKUP_H
 
 #include <QObject>
+#include "message.h"
+#include "peer.h"
 
-class chatBackup : public QObject
+class chatBackup
 {
-    Q_OBJECT
+
 public:
-    explicit chatBackup(QObject *parent = 0);
+    chatBackup();
     enum SaveFormat {Json, Binary};
+
+    void writeToFile(Message* msg);
 
     void writeBackup();
     void readBackup();
 };
 
 #endif // CHATBACKUP_H
+*/

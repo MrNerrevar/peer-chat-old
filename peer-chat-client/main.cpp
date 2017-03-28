@@ -1,5 +1,6 @@
 #include <QApplication>
 
+#include "login.h"
 #include "chatdialog.h"
 
 #include <QtCore/QSettings>
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //login dialog;
     ChatDialog dialog;
     dialog.show();
     return app.exec();
