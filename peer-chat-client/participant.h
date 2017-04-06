@@ -19,6 +19,7 @@ public:
     static QString UnidentifiedName;
     static QString UnidentifiedHost;
     static qint16 UnidentifiedPort;
+    static QString LocalHost;
 
     bool isEmpty();
     bool setHost(QString, qint16);

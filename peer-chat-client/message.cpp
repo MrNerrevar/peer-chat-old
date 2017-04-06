@@ -2,6 +2,20 @@
 #include "participantmanager.h"
 #include <QRegExp>
 
+QString Message::MessageRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: [^\\[.\\]]+\\[.\\]";
+QString Message::HeaderRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: ";
+QString Message::TrailerRegex = "\\[.\\]";
+QString Message::NameAndDateRegex = "(\\[[\\w\\d: \\+\\-]+\\])";
+QString Message::NameLastIndexRegex = "\\](\\[[\\w\\d: \\+\\-]+\\]): [^\\[.\\]]+\\[.\\]";
+QString Message::DateLastIndexRegex = "\\]: [^\\[.\\]]+\\[.\\]";
+QString Message::HeaderIndexRegex = "[^:\\[.\\]]+\\[.\\]";
+
+QString Message::JoinMessage = "[Join]:";
+QString Message::JoinFailMessage = "[Join][Failed]:";
+QString Message::JoinRespondMessage = "[Join][Success]:";
+QString Message::ChatMessage = "[Chat]:";
+QString Message::Terminator = "[;;]";
+
 Message::Message()
 {
 

@@ -1,11 +1,12 @@
 #ifndef CHATDIALOG_H
 #define CHATDIALOG_H
 
-#include "chatbackup.h"
 #include "ui_chatdialog.h"
 
 class Peer;
 class Message;
+class ChatManager;
+class Chat;
 class ChatDialog : public QDialog, private Ui::ChatDialog
 {
     Q_OBJECT
@@ -17,17 +18,20 @@ public slots:
     void appendMessage(Message*);
 
 private slots:
-    void getLocalIP();
     void returnPressed();
     void newParticipant(const QString &nick);
     void participantLeft(const QString &nick);
 
 private:
     void initParticipants();
+    void initManagers();
+    void initConnections();
 
     QTextTableFormat tableFormat;
     Peer* peer;
     //chatBackup* chatbackup;
+    ChatManager* manager;
+    Chat* activeChat;
 };
 
 #endif

@@ -45,6 +45,16 @@ Participant* ParticipantManager::newParticipant(QString n, QString h, qint16 p)
         return pa;
     }
 
+    f = std::find_if(Participants.begin(), Participants.end(), [h, p](Participant* pa) { return pa->Host == Participant::LocalHost && pa->Port == p && pa->Host == h; });
+    if(f == Participants.end())
+    {
+        auto pa = new Participant();
+        pa->setName(n);
+        pa->setHost(h, p);
+        Participants.push_back(pa);
+        return pa;
+    }
+
     f = std::find_if(Participants.begin(), Participants.end(), [h](Participant* p) { return p->Host == h; });
     if(f != Participants.end())
     {

@@ -3,6 +3,7 @@
 QString Participant::UnidentifiedName = "UnidentifiedName";
 QString Participant::UnidentifiedHost = "UnidentifiedHost";
 qint16 Participant::UnidentifiedPort = ~(0x0);
+QString Participant::LocalHost = "localhost";
 
 Participant::Participant()
 {

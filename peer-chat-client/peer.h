@@ -16,6 +16,7 @@ public:
     void setParticipant(Participant*);
     QString getAddress(Participant*);
     QString getAddress();
+    Participant* getParticipant();
 signals:
     void readMessage(Message*);
 public slots:

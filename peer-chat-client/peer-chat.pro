@@ -29,7 +29,9 @@ HEADERS       = chatdialog.h \
     		chatbackup.h \
     		peer.h \
     		participantmanager.h \
-    login.h
+    login.h \
+    chat.h \
+    chatmanager.h
 SOURCES       = chatdialog.cpp \
                 main.cpp \
                 message.cpp \
@@ -37,6 +39,8 @@ SOURCES       = chatdialog.cpp \
 		chatbackup.cpp \
     		peer.cpp \
     		participantmanager.cpp \
-    login.cpp
+    login.cpp \
+    chat.cpp \
+    chatmanager.cpp
 FORMS         = chatdialog.ui \
     login.ui

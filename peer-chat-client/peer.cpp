@@ -26,8 +26,8 @@ void Peer::allocateSocket(QTcpSocket* socket)
 
 bool Peer::connectTo(Participant* p)
 {
-    if(p->Status == 1)
-        return false;
+    if (participants.contains(p))
+        return true;
 
     qDebug() << "Connecting to peer";
     auto socket = new QTcpSocket(this);
@@ -65,6 +65,11 @@ void Peer::disconnected()
 void Peer::setParticipant(Participant* p)
 {
     this->me = p;
+}
+
+Participant* Peer::getParticipant()
+{
+    return this->me;
 }
 
 bool Peer::writeMessage(Message* m)

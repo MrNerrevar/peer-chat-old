@@ -5,6 +5,7 @@
 #include "message.h"
 #include "participantmanager.h"
 #include "chatbackup.h"
+#include "chatmanager.h"
 
 ChatDialog::ChatDialog(QWidget *parent)
     : QDialog(parent)
@@ -19,12 +20,19 @@ ChatDialog::ChatDialog(QWidget *parent)
     this->peer = new Peer();
     //this->chatbackup = new chatBackup();
 
-    connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
-    connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
-    connect(peer, SIGNAL(readMessage(Message*)), this, SLOT(appendMessage(Message*)));
     this->initParticipants();
+    this->initManagers();
+
+    connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
+    connect(lineEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
+    //connect(peer, SIGNAL(readMessage(Message*)), this, SLOT(appendMessage(Message*)));
+    connect(peer, SIGNAL(readMessage(Message*)), manager, SLOT(ManageMessage(Message*)));
+    connect(peer, SIGNAL(readMessage(Message*)), manager, SLOT(Join(Message*)));
+    connect(manager, SIGNAL(readMessage(Message*)), this, SLOT(appendMessage(Message*)));
 
     tableFormat.setBorder(0);
+
+    this->initConnections();
 }
 
 void ChatDialog::initParticipants()
@@ -33,25 +41,36 @@ void ChatDialog::initParticipants()
     peer->setParticipant(p);
     newParticipant(p->Name);
 
-    p = ParticipantManager::newParticipant("Auth", "localhost", 1023);
-    newParticipant(p->Name);
-
-    //peer->connectTo(p);
+    p = ParticipantManager::newParticipant("Jarrod", "192.168.0.10-", 1024);
+    newParticipant(p->Name);    
 }
 
-void ChatDialog::getLocalIP()
+void ChatDialog::initManagers()
 {
-    foreach (const QHostAddress &address, QNetworkInterface::allAddresses())
-    {
-        if (address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost))
-        {
-            qDebug() << address.toString();
-        }
-    }
+    this->manager = new ChatManager(this);
+    this->manager->peer = this->peer;
+    this->manager->Owner = this->peer->getParticipant();
+}
+
+void ChatDialog::initConnections()
+{
+    //Try for 60 Seconds
+    qDebug() << "Waiting to Connect";
+    QTime dieTime= QTime::currentTime().addSecs(15);
+    while(QTime::currentTime() < dieTime || !peer->connectTo(ParticipantManager::getParticipant("Jarrod")))
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 1000);
+
+    this->activeChat = manager->CreateChat(ParticipantManager::getParticipant("Jarrod"));
 }
 
 void ChatDialog::appendMessage(Message* m)
 {
+    if (m->Sender == NULL || m->Sender->isEmpty())
+        return;
+
+    if (m->Sender->Name == NULL || m->Sender->Name.isEmpty())
+        return;
+
     if (m == NULL || m->isEmpty())
         return;
 
@@ -70,23 +89,23 @@ void ChatDialog::returnPressed()
     if (text.isEmpty())
         return;
 
+    this->activeChat = manager->getChatWithParticipant(ParticipantManager::getParticipant("Jarrod"));
+
     auto m = new Message();
     m->setData(text);
-    m->Receiver = ParticipantManager::getParticipant("Auth");
+    //m->Receiver = ParticipantManager::getParticipant("Auth");
 
-    if(!m->Receiver->isWellKnown())
+    //if(!m->Receiver->isWellKnown())
+    //    return;
+
+    //if(!peer->connectTo(ParticipantManager::getParticipant("Auth")))
+    //    peer->connectTo(ParticipantManager::getParticipant("Auth"));
+
+    if(this->activeChat == NULL)
         return;
 
-    if(!peer->connectTo(ParticipantManager::getParticipant("Auth")))
-        peer->connectTo(ParticipantManager::getParticipant("Auth"));
-
-    if(peer->writeMessage(m))
-    {
+    if(manager->sendMessage(m, this->activeChat))
         appendMessage(m);
-        //chatbackup->writeToFile(m);
-    }
-
-    //writeToFile(myNickName, text);
 
     lineEdit->clear();
 }

@@ -24,13 +24,19 @@ public:
 
     Message fromRawString(QString);
 
-    const QString MessageRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: [^\\[.\\]]+\\[.\\]";
-    const QString HeaderRegex = "(\\[[\\w\\d: \\+\\-]+\\]){2}: ";
-    const QString TrailerRegex = "\\[.\\]";
-    const QString NameAndDateRegex = "(\\[[\\w\\d: \\+\\-]+\\])";
-    const QString NameLastIndexRegex = "\\](\\[[\\w\\d: \\+\\-]+\\]): [^\\[.\\]]+\\[.\\]";
-    const QString DateLastIndexRegex = "\\]: [^\\[.\\]]+\\[.\\]";
-    const QString HeaderIndexRegex = "[^:\\[.\\]]+\\[.\\]";
+    static QString MessageRegex;
+    static QString HeaderRegex;
+    static QString TrailerRegex;
+    static QString NameAndDateRegex;
+    static QString NameLastIndexRegex;
+    static QString DateLastIndexRegex;
+    static QString HeaderIndexRegex;
+
+    static QString JoinMessage;
+    static QString JoinFailMessage;
+    static QString JoinRespondMessage;
+    static QString ChatMessage;
+    static QString Terminator;
 };
 
 #endif // MESSAGE_H
